@@ -526,7 +526,7 @@ class IndexController extends Controller
             'input.rules' => 'required|array',
             'input.rules.*.id' => 'required|integer:strict',
             'input.rules.*.method' => 'required|string',
-            'input.rules.*.priority' => 'nullable|integer:strict|distinct',
+            'input.rules.*.priority' => 'nullable|integer:strict',
         ]);
 
         if ($validator->fails()) {
