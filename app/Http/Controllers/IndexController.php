@@ -540,8 +540,19 @@ class IndexController extends Controller
         $rules = $request->collect('input.rules');
 
         $selected_rule = $rules->filter(function ($rule) use ($weight, $country, $method) {
-            return (isset($rule['max_weight']) && $weight > 0 && $weight <= $rule['max_weight']) ||
-                (isset($rule['country']) && $rule['country'] == $country);
+            if ((isset($rule['max_weight']) && $weight > 0 && $weight <= $rule['max_weight'])) {
+                if (isset($rule['country']) && $rule['country'] != $country) {
+                    return false;
+                }
+                return true;
+            }
+            if (isset($rule['country']) && $rule['country'] == $country) {
+                if ((isset($rule['max_weight']) && $weight > $rule['max_weight'])) {
+                    return false;
+                }
+                return true;
+            }
+            return false;
         })->sortBy('priority')->first();
 
         $shipping_method = data_get($selected_rule, 'method');
@@ -573,9 +584,9 @@ class IndexController extends Controller
         $blockedCountries = $request->array('input.rules.blocked_countries');
         $flagged = false;
 
-        if($orderAmount > $maxAmount) {
-          $flagged = true;
-        } else if(in_array($orderCountry, $blockedCountries)) {
+        if ($orderAmount > $maxAmount) {
+            $flagged = true;
+        } else if (in_array($orderCountry, $blockedCountries)) {
             $flagged = true;
         }
 
