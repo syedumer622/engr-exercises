@@ -543,7 +543,7 @@ class IndexController extends Controller
             return (isset($rule['max_weight']) && $weight > 0 && $weight <= $rule['max_weight']) ||
                 (isset($rule['country']) && $rule['country'] == $country) ||
                 (isset($rule['method']) && $rule['method'] == $method);
-        })->sortByDesc('priority')->first();
+        })->sortBy('priority')->first();
 
         $shipping_method = data_get($selected_rule, 'method');
         return $this->sendResponse(true, $shipping_method);
@@ -556,8 +556,8 @@ class IndexController extends Controller
             'input.order' => 'required|array',
             'input.order.amount' => 'required|integer:strict|min:0',
             'input.order.country' => 'required|string',
-            'input.order.previous_orders' => 'required|integer:strict',
-            'input.rules.max_amount' => 'nullable|integer:strict',
+            'input.order.previous_orders' => 'required|integer:strict|min:0',
+            'input.rules.max_amount' => 'required|integer:strict',
             'input.rules.blocked_countries' => 'required|array',
             'input.rules.blocked_countries.*' => 'nullable|string'
         ]);
