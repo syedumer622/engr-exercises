@@ -553,12 +553,13 @@ class IndexController extends Controller
     {
         $validator = validator($request->all(), [
             'input' => 'required|array',
-            'input.order' => 'required|array',
+            'input.order' => 'present|array',
             'input.order.amount' => 'required|integer:strict',
-            'input.order.country' => 'required|string',
-            'input.order.previous_orders' => 'required|integer:stric',
-            'input.rules.max_amount' => 'required|integer:strict',
-            'input.rules.blocked_countries' => 'required|array'
+            'input.order.country' => 'nullable|string',
+            'input.order.previous_orders' => 'nullable|integer:stric',
+            'input.rules.max_amount' => 'nullable|integer:strict',
+            'input.rules.blocked_countries' => 'present|array',
+            'input.rules.blocked_countries.*' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
