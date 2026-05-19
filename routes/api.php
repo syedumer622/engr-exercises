@@ -23,3 +23,4 @@ Route::post('/exercise-12-bundle-pricing', [IndexController::class, 'bundlePrici
 Route::post('/exercise-13-cart-merge', [IndexController::class, 'cartMergeEngine']); // exercise = 13
 Route::post('/exercise-14-upsell', [IndexController::class, 'numberIndices']); // exercise = 14
 Route::post('/exercise-15-shipping-rule', [IndexController::class, 'shippingRuleEngine']); // exercise = 15
+Route::post('/exercise-16-fraud-check', [IndexController::class, 'fraudPatternDetector']); // exercise = 16

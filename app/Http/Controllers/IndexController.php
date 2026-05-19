@@ -548,4 +548,37 @@ class IndexController extends Controller
         $shipping_method = data_get($selected_rule, 'method');
         return $this->sendResponse(true, compact('shipping_method'));
     }
+
+    public function fraudPatternDetector(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'input' => 'required|array',
+            'input.order' => 'required|array',
+            'input.order.amount' => 'required|integer:strict',
+            'input.order.country' => 'required|string',
+            'input.order.previous_orders' => 'required|integer:stric',
+            'input.rules.max_amount' => 'required|integer:strict',
+            'input.rules.blocked_countries' => 'required|array'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendResponse(false, $validator->errors()->first());
+        }
+
+        $orderAmount = $request->input('input.order.amount');
+        $orderCountry = $request->input('input.order.country');
+        $previousOrders = $request->input('input.order.previous_orders');
+
+        $maxAmount = $request->input('input.rules.max_amount');
+        $blockedCountries = $request->array('input.rules.blocked_countries');
+        $flagged = false;
+
+        if($orderAmount > $maxAmount) {
+          $flagged = true;
+        } else if(in_array($orderCountry, $blockedCountries)) {
+            $flagged = true;
+        }
+
+        return $this->sendResponse(true, compact('flagged'));
+    }
 }
