@@ -592,4 +592,63 @@ class IndexController extends Controller
 
         return $this->sendResponse(true, compact('flagged'));
     }
+
+    public function shopifyPriceAdjustmentEngine(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'input' => 'required|array',
+            'input.prices' => 'required|array',
+            'input.prices.*' => 'required|array',
+            'input.prices.*.*' => 'required|integer:strict|min:0',
+            'input.adjustment_value' => 'required|integer:strict|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendResponse(false, $validator->errors()->first());
+        }
+
+        $priceSets = $request->collect('input.prices');
+        $adjustment = $request->input('input.adjustment_value');
+
+        $minimum_operations = 0;
+        $prices = [];
+        foreach($priceSets as $priceSet) {
+            foreach($priceSet as $price) {
+                $prices[] = $price;
+            }
+        }
+        foreach($prices as $price) {
+            $total_operations = $this->calculateTotalOperations($price, $prices, $adjustment);
+            if($minimum_operations == 0) {
+                $minimum_operations = $total_operations;
+            } elseif($total_operations < $minimum_operations) {
+                $minimum_operations = $total_operations;
+            }
+        }
+        return $this->sendResponse(true, compact('minimum_operations'));
+    }
+
+    private function calculateTotalOperations($current_price, $prices, $adjustment_value) {
+        $total_operations = 0;
+        foreach($prices as $price) {
+            if($price != $current_price) {
+                $res_price = $current_price;
+                while ($price > $res_price) {
+                    $res_price += $adjustment_value;
+                    $total_operations++;
+                    if($res_price % $adjustment_value != 0) {
+                        return -1;
+                    }
+                }
+                while ($price < $res_price) {
+                    $res_price -= $adjustment_value;
+                    $total_operations++;
+                    if($res_price % $adjustment_value != 0) {
+                        return -1;
+                    }
+                }
+            }
+        }
+        return $total_operations;
+    }
 }
