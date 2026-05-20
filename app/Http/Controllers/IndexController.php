@@ -599,7 +599,7 @@ class IndexController extends Controller
             'input' => 'required|array',
             'input.prices' => 'required|array',
             'input.prices.*' => 'required|array',
-            'input.prices.*.*' => 'required|integer:strict|min:0',
+            'input.prices.*.*' => 'required|integer:strict',
             'input.adjustment_value' => 'required|integer:strict|min:0',
         ]);
 
@@ -612,41 +612,37 @@ class IndexController extends Controller
 
         $minimum_operations = 0;
         $prices = [];
-        foreach($priceSets as $priceSet) {
-            foreach($priceSet as $price) {
+        foreach ($priceSets as $priceSet) {
+            foreach ($priceSet as $price) {
                 $prices[] = $price;
             }
         }
-        foreach($prices as $price) {
+        foreach ($prices as $price) {
             $total_operations = $this->calculateTotalOperations($price, $prices, $adjustment);
-            if($minimum_operations == 0) {
+            if ($minimum_operations == 0) {
                 $minimum_operations = $total_operations;
-            } elseif($total_operations < $minimum_operations) {
+            } elseif ($total_operations < $minimum_operations && $total_operations != -1) {
                 $minimum_operations = $total_operations;
             }
         }
         return $this->sendResponse(true, compact('minimum_operations'));
     }
 
-    private function calculateTotalOperations($current_price, $prices, $adjustment_value) {
+    private function calculateTotalOperations($current_price, $prices, $adjustment_value)
+    {
         $total_operations = 0;
-        foreach($prices as $price) {
-            if($price != $current_price) {
-                $res_price = $current_price;
-                while ($price > $res_price) {
-                    $res_price += $adjustment_value;
-                    $total_operations++;
-                    if($res_price % $adjustment_value != 0) {
-                        return -1;
-                    }
-                }
-                while ($price < $res_price) {
-                    $res_price -= $adjustment_value;
-                    $total_operations++;
-                    if($res_price % $adjustment_value != 0) {
-                        return -1;
-                    }
-                }
+        foreach ($prices as $price) {
+            $res_price = $current_price;
+            while ($price > $res_price) {
+                $res_price += $adjustment_value;
+                $total_operations++;
+            }
+            while ($price < $res_price) {
+                $res_price -= $adjustment_value;
+                $total_operations++;
+            }
+            if (($price - $current_price) % $adjustment_value != 0) {
+                return -1;
             }
         }
         return $total_operations;
