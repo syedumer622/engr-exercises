@@ -633,6 +633,7 @@ class IndexController extends Controller
         $total_operations = 0;
         foreach ($prices as $price) {
             $res_price = $current_price;
+            $difference = $price - $current_price;
             while ($price > $res_price) {
                 $res_price += $adjustment_value;
                 $total_operations++;
@@ -641,7 +642,7 @@ class IndexController extends Controller
                 $res_price -= $adjustment_value;
                 $total_operations++;
             }
-            if (($price - $current_price) % $adjustment_value != 0) {
+            if ($difference % $adjustment_value != 0) {
                 return -1;
             }
         }
