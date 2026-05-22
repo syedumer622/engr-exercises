@@ -654,9 +654,9 @@ class IndexController extends Controller
         $validator = validator($request->all(), [
             'input' => 'required|array',
             'input.shopify' => 'required|array',
-            'input.shopify.price' => 'required|integer:strict',
+            'input.shopify.price' => 'required|integer:strict:min:0',
             'input.shopify.updated_at' => 'required|integer:strict',
-            'input.internal.price' => 'required|integer:strict',
+            'input.internal.price' => 'required|integer:strict:min:0',
             'input.internal.updated_at' => 'required|integer:strict',
         ]);
 
@@ -667,6 +667,10 @@ class IndexController extends Controller
         $shopify = $request->input('input.shopify');
         $internal = $request->input('input.internal');
         $result = null;
+
+        if(data_get($internal, 'updated_at') == data_get($shopify, 'updated_at')) {
+            return $this->sendResponse(false, null, 'The timestamps of shopify and internal can\'t be equal');
+        }
 
         if (data_get($internal, 'updated_at') > data_get($shopify, 'updated_at')) {
             $result = $internal;
