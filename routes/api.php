@@ -25,3 +25,4 @@ Route::post('/exercise-14-upsell', [IndexController::class, 'numberIndices']); /
 Route::post('/exercise-15-shipping-rule', [IndexController::class, 'shippingRuleEngine']); // exercise = 15
 Route::post('/exercise-16-fraud-check', [IndexController::class, 'fraudPatternDetector']); // exercise = 16
 Route::post('/exercise-17-shopify-price-adjustment', [IndexController::class, 'shopifyPriceAdjustmentEngine']); // exercise = 17
+Route::post('/exercise-18-data-sync', [IndexController::class, 'dataSyncConflictResolver']); // exercise = 18

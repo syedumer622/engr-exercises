@@ -648,4 +648,34 @@ class IndexController extends Controller
         }
         return $total_operations;
     }
+
+    public function dataSyncConflictResolver(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'input' => 'required|array',
+            'input.shopify' => 'required|array',
+            'input.shopify.price' => 'required|integer:strict',
+            'input.shopify.updated_at' => 'required|integer:strict',
+            'input.internal.price' => 'required|integer:strict',
+            'input.internal.updated_at' => 'required|integer:strict',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendResponse(false, $validator->errors()->first());
+        }
+
+        $shopify = $request->input('input.shopify');
+        $internal = $request->input('input.internal');
+        $result = null;
+
+        if(data_get($internal ,'updated_at') > data_get($shopify, 'updated_at')) {
+            $result = $internal;
+        } else {
+            $result = $shopify;
+        }
+
+        $price = data_get($result, 'price');
+
+        return $this->sendResponse(true, compact('price'));
+    }
 }
