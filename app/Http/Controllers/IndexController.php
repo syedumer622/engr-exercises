@@ -654,9 +654,9 @@ class IndexController extends Controller
         $validator = validator($request->all(), [
             'input' => 'required|array',
             'input.shopify' => 'required|array',
-            'input.shopify.price' => 'required|integer:strict:min:0',
+            'input.shopify.price' => 'required|integer:strict|min:0',
             'input.shopify.updated_at' => 'required|integer:strict',
-            'input.internal.price' => 'required|integer:strict:min:0',
+            'input.internal.price' => 'required|integer:strict|min:0',
             'input.internal.updated_at' => 'required|integer:strict',
         ]);
 
