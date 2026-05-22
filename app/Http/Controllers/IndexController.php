@@ -703,8 +703,8 @@ class IndexController extends Controller
         $total_combinations = $options->reduce(function ($carry, $value) {
             return $carry * data_get($value, 'values');
         }, 1);
-        $limit_exceeded = $total_combinations > $limit;
+        $exceeded = $total_combinations > $limit;
 
-        return $this->sendResponse(true, compact('total_combinations', 'limit_exceeded'));
+        return $this->sendResponse(true, compact('total_combinations', 'exceeded'));
     }
 }
