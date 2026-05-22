@@ -668,14 +668,37 @@ class IndexController extends Controller
         $internal = $request->input('input.internal');
         $result = null;
 
-        if(data_get($internal ,'updated_at') > data_get($shopify, 'updated_at')) {
+        if (data_get($internal, 'updated_at') > data_get($shopify, 'updated_at')) {
             $result = $internal;
         } else {
             $result = $shopify;
         }
 
-        $price = data_get($result, 'price');
+        return $this->sendResponse(true, data_get($result, 'price'));
+    }
 
-        return $this->sendResponse(true, compact('price'));
+    public function variantCombinationController(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'input' => 'required|array',
+            'input.options' => 'required|array',
+            'input.options.*.name' => 'required|string|distinct',
+            'input.options.*.values' => 'required|integer:strict|min:1',
+            'input.limit' => 'required|integer:strict|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendResponse(false, $validator->errors()->first());
+        }
+
+        $options = $request->collect('input.options');
+        $limit = $request->input('input.limit');
+
+        $total_combinations = $options->reduce(function ($carry, $value) {
+            return $carry * data_get($value, 'values');
+        }, 1);
+        $limit_exceeded = $total_combinations > $limit;
+
+        return $this->sendResponse(true, compact('total_combinations', 'limit_exceeded'));
     }
 }

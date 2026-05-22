@@ -26,3 +26,4 @@ Route::post('/exercise-15-shipping-rule', [IndexController::class, 'shippingRule
 Route::post('/exercise-16-fraud-check', [IndexController::class, 'fraudPatternDetector']); // exercise = 16
 Route::post('/exercise-17-shopify-price-adjustment', [IndexController::class, 'shopifyPriceAdjustmentEngine']); // exercise = 17
 Route::post('/exercise-18-data-sync', [IndexController::class, 'dataSyncConflictResolver']); // exercise = 18
+Route::post('/exercise-19-variant-control', [IndexController::class, 'variantCombinationController']); // exercise = 19
