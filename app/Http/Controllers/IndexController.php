@@ -674,7 +674,7 @@ class IndexController extends Controller
             $result = $shopify;
         }
 
-        $result = data_get($result, 'price')
+        $result = data_get($result, 'price');
 
         return $this->sendResponse(true, compact('result'));
     }
