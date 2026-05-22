@@ -674,7 +674,9 @@ class IndexController extends Controller
             $result = $shopify;
         }
 
-        return $this->sendResponse(true, data_get($result, 'price'));
+        $result = data_get($result, 'price')
+
+        return $this->sendResponse(true, compact('result'));
     }
 
     public function variantCombinationController(Request $request)
